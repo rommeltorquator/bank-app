@@ -1,0 +1,137 @@
+/* colors */
+/* 3399CC, CDB99C, FFFFFF, 330000 */
+/* https://www.colorcombos.com/color-schemes/18/ColorCombo18.html */
+
+body {
+    letter-spacing: 1px;    
+    background-color: #fff9f0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Fahkwang', sans-serif;
+    color: #023F5C;
+}
+
+form {
+    font-size: 15px;
+}
+
+h1 {
+    font-size: 30px;
+}
+
+h3 {
+    font-size: 25px;
+    color: #222;
+}
+
+.content {
+    background-color: #fff9f0;
+    padding: 0;
+}
+
+.form-control {
+    border-radius: 0;
+}
+
+.form-label {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.navbar {
+    background-color: #066594;    
+}
+
+.navbar-brand {
+    color: #ffffff;
+    font-size: 25px;
+    font-family: 'Fahkwang', sans-serif;
+}
+
+.navbar-brand:hover {
+    color: #8EC6E1;
+}
+
+.nav-item a {
+    color: #ffffff;
+    font-size: 17px;
+}
+
+.nav-item a:hover {
+    color: #8EC6E1;
+}
+
+.table thead tr {
+    color: #ffffff;
+}
+
+.table td {
+    border-bottom: 1px solid #999999;
+}
+
+.table thead tr th {
+    color: #023F5C;
+}
+
+.table tr,
+.table th {
+    font-size: 15px;
+}
+
+.btn {
+    border-radius: 0;
+}
+
+.create-btn {
+    background-color: #023F5C;
+    border: 0;
+    width: 100%;
+    font-size: 20px;
+}
+
+.create-btn:hover {
+    background-color: #187EAF;
+}
+
+.deposit-btn {
+    background-color: #3399CC;
+    border: 0;
+}
+
+.deposit-btn:hover {
+    background-color: #066594;
+}
+
+.withdraw-btn {
+    background-color: #ad9470;
+    border: 0;
+}
+
+.withdraw-btn:hover {
+    background-color: #8b714c;
+}
+
+.load-btn {
+    background-color: #3C8EB6;
+    border: 0;
+}
+
+.bg-forms {
+    background-color: #8EC6E1;
+}
+
+.transaction-btn {
+    width: 150px;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+.create-form {
+    border: 1px solid #999999;
+}
