@@ -26,13 +26,14 @@ h1 {
 }
 
 h3 {
-    font-size: 25px;
+    font-size: 21px;
     color: #222;
 }
 
 .content {
-    background-color: #fff9f0;
-    padding: 0;
+    background-color: #FFFDFB;    
+    padding: 15px;
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .form-control {
@@ -123,7 +124,8 @@ h3 {
 }
 
 .bg-forms {
-    background-color: #8EC6E1;
+    /* background-color: #8EC6E1; */
+    background-color: #FFFDFB;
 }
 
 .transaction-btn {
@@ -133,5 +135,7 @@ h3 {
 }
 
 .create-form {
-    border: 1px solid #999999;
+    /* border: 1px solid #999999; */
+    /* background-color: #dacebe; */
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2);
 }
