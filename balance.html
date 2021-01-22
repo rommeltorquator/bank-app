@@ -15,11 +15,11 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
-
+    <script src="script.js" async></script>
     <title>Hello, world!</title>
 </head>
 
-<body>
+<body onload="fetchData();">
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
@@ -56,14 +56,35 @@
         <div class="row">
             <div class="col-3"></div>
             <div class="col-6 content p-4 create-form">
-                <form>
+                <form id="getBalance_form">
                     <div class="mb-4">
                         <label for="fullName" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="fullName" aria-describedby="emailHelp">                        
+                        <input type="text" class="form-control" id="fullName" aria-describedby="emailHelp" required>
+                        <input type="checkbox" id="trans_hist" >
+                        <label for="trans_hist"> Include transaction history</label><br>                        
                     </div>
 
-                    <h3 class="text-center mb-5 balance">The current balance is PHP 3,500.00</h3>
-                    <button type="submit" class="btn btn-primary create-btn">Get Balance</button>
+                    <h3 class="text-center mb-5 balance" id="balance"></h3>
+
+                    <table class="table table-hover" id="trans_hist_table" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Amount</th>                                
+                                <th>Running balance</th>
+                                <th>Date and time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trans_hist_body">
+                            <tr>
+                                <td>+1000</td>                            
+                                <td>PHP 17,000,000.01</td>
+                                <td>01/21/2021 15:30</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <button type="submit" class="btn btn-primary create-btn">Get Balance</button><br><br>
+                    <button type="button" class="btn btn-primary create-btn" id="trans_hist_clear">Clear</button>
                 </form>
             </div>
         </div>

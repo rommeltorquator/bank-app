@@ -1,9 +1,12 @@
 let Users=[];
 let Users_json;
 
-//dom handlers
+/* ******************************************************************
+
+                    Dom handlers
+
+****************************************************************** */
 if( document.getElementById('createUser_form') != null ){
-    // console.log("dom set");
     document.getElementById('createUser_form').onsubmit=function(){
         let user=document.getElementById("fullName").value;
         let balance=document.getElementById("balance").value;
@@ -14,12 +17,82 @@ if( document.getElementById('createUser_form') != null ){
     };
 }
 
+if( document.getElementById('getBalance_form') != null ){
+    document.getElementById('getBalance_form').onsubmit=function(){
+        let user=document.getElementById("fullName").value;
+        let trans_checkbox=document.getElementById("trans_hist");
+        let trans_hist_table=document.getElementById("trans_hist_table");
+        let trans_hist_body=document.getElementById("trans_hist_body");
+        getBalance(user);
+        if(trans_checkbox.checked===true){
+            trans_hist_table.style.display="table";
+            listTransHistory(user);
+        }
+        document.getElementById("fullName").value="";
+        document.getElementById("trans_hist").checked=false;
+        return false; //important to prevent default behaviour at the end of your submit handler
+    };
 
+    document.getElementById('trans_hist_clear').onclick=function(){
+        document.getElementById("trans_hist_table").style.display="none";
+        document.getElementById("balance").innerHTML="";
+    }
 
-//methods
-function User(name,balance){
+}
+
+if( document.getElementById('deposit_form') != null ){
+    document.getElementById('deposit_form').onsubmit=function(){
+        let user=document.getElementById("deposit_name").value;
+        let amount=parseInt(document.getElementById("deposit").value);
+        deposit(user,amount);
+        document.getElementById("deposit_name").value="";
+        document.getElementById("deposit").value="";
+        return false; //important to prevent default behaviour at the end of your submit handler
+    };
+}
+
+if( document.getElementById('withdraw_form') != null ){
+    document.getElementById('withdraw_form').onsubmit=function(){
+        let user=document.getElementById("withdraw_name").value;
+        let amount=parseInt(document.getElementById("withdraw").value);
+        withdraw(user,amount);
+        document.getElementById("withdraw_name").value="";
+        document.getElementById("withdraw").value="";
+        return false; //important to prevent default behaviour at the end of your submit handler
+    };
+}
+
+if( document.getElementById('transfer_form') != null ){
+    document.getElementById('transfer_form').onsubmit=function(){
+        let sender=document.getElementById("transfer_sender").value;
+        let receiver=document.getElementById("transfer_receiver").value;
+        let amount=parseInt(document.getElementById("transfer").value);
+        send(sender,receiver,amount);
+        document.getElementById("transfer_sender").value="";
+        document.getElementById("transfer_receiver").value="";
+        document.getElementById("transfer").value="";
+        return false; //important to prevent default behaviour at the end of your submit handler
+    };
+}
+
+/* ******************************************************************
+
+                    Bank App main methods
+
+****************************************************************** */
+
+function User(name,balance,email=""){
     this.name=name;
+    this.balance=parseInt(balance);
+    this.email=email;
+    this.transaction_history=[];
+}
+
+function Transaction(operation,amount,balance,datetime){
+    this.operation=operation;
+    this.amount=amount;
     this.balance=balance;
+    this.datetime=datetime;
 }
 
 function createUser(user,balance=0){
@@ -28,16 +101,30 @@ function createUser(user,balance=0){
         Users.push(new User(user,balance));
     }
     updateData();
+
+    document.getElementById("createUser_status").innerHTML="User has been created!";
+    setTimeout(function(){
+        document.getElementById("createUser_status").innerHTML="";
+    },2000);
 }
 
 function deposit(user,amount){
-    let new_balance;
+    fetchData();
     let index=userExists(user);
 
     if( index>=0 && validAmtFormat(amount) ){
-        new_balance=Users[index].balance+amount;
-        Users[index].balance=new_balance;
-        return new_balance;
+        let amount_parsed=parseInt(amount)
+        Users[index].balance+=amount_parsed;
+        Users[index].transaction_history.push( new Transaction("+",amount_parsed,Users[index].balance,getDatetime()));
+        updateData();
+
+        let addedAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(amount);
+        document.getElementById("transaction_status").innerHTML="Transaction complete! "+addedAmount+" added to "+user+"'s account";
+        // document.getElementById("transaction_status").innerHTML="Transaction complete!";
+        
+        setTimeout(function(){
+            document.getElementById("transaction_status").innerHTML="";
+        },5000);    
     }else{
         alert("Deposit action invalid!");
     }
@@ -45,14 +132,24 @@ function deposit(user,amount){
 }
 
 function withdraw(user,amount){
-    let new_balance;
+    fetchData();
     let index=userExists(user);
 
     //check if balance is sufficient for withdrawal
     if( index>=0 && validAmtFormat(amount) && Users[index].balance>=amount){
-        new_balance=Users[index].balance-amount;
-        Users[index].balance=new_balance;
-        return new_balance;
+        let amount_parsed=parseInt(amount);
+        Users[index].balance-=amount_parsed;
+        Users[index].transaction_history.push( new Transaction("-",amount_parsed,Users[index].balance,getDatetime()));
+
+        updateData();
+
+        let deductedAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(amount);
+        document.getElementById("transaction_status").innerHTML="Transaction complete! "+deductedAmount+" deducted from "+user+"'s account";
+        // document.getElementById("transaction_status").innerHTML="Transaction complete!";
+        
+        setTimeout(function(){
+            document.getElementById("transaction_status").innerHTML="";
+        },5000);  
     }else{
         alert("Withdrawal action invalid! Withdrawal amount is greater than existing balance.");
     }
@@ -60,20 +157,29 @@ function withdraw(user,amount){
 }
 
 function send(from_user,to_user,amount){
-    let sender_balance;
-    let receiver_balance;
+    fetchData();
     let sender_index=userExists(from_user);
     let receiver_index=userExists(to_user);
 
     if( sender_index>=0 && receiver_index>=0 && validAmtFormat(amount) && Users[sender_index].balance>=amount ){
+        let amount_parsed=parseInt(amount);
+
+        Users[sender_index].balance-=amount_parsed;
+        Users[sender_index].transaction_history.push( new Transaction("-",amount_parsed,Users[sender_index].balance,getDatetime()));
+
+        Users[receiver_index].balance+=amount_parsed;
+        Users[receiver_index].transaction_history.push( new Transaction("+",amount_parsed,Users[receiver_index].balance,getDatetime()));
+
+        updateData();
         
-        Users[sender_index].balance-=amount;
-        sender_balance=Users[sender_index].balance;
+        let transAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(amount);
+        document.getElementById("transaction_status").innerHTML="Transaction complete! "+transAmount+" transferred from "+from_user+" to "+to_user+"'s account";
+        // document.getElementById("transaction_status").innerHTML="Transaction complete!";
+        
+        setTimeout(function(){
+            document.getElementById("transaction_status").innerHTML="";
+        },5000);  
 
-        Users[receiver_index].balance+=amount;
-        receiver_balance=Users[receiver_index].balance;
-
-        return "sender bal: " + sender_balance+" receiver bal: "+receiver_balance; 
     }else{
         alert("Send money action invalid! Check if users are valid and amount doesn't exceed sender's balance");
     }
@@ -81,15 +187,41 @@ function send(from_user,to_user,amount){
 }
 
 function getBalance(user){
-    let balance;
+    fetchData();
+    let balance=document.getElementById("balance");
     let index=userExists(user);
     if( index>=0 ){
-        balance=Users[index].balance;
-        return "Php "+balance;
+        balance.innerHTML = user+ " current balance: "+ new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(Users[index].balance);
+        
     }else{
-        return "Get balance action invalid as user can't be found on the system";
+        alert("Get balance action invalid as user can't be found on the system");
     }
     
+}
+
+function listTransHistory(user){
+    fetchData();
+    let index=userExists(user);
+    document.getElementById("trans_hist_body").innerHTML="";
+    if( index>=0 ){
+        Users[index].transaction_history.forEach(function(item,index){
+            let tr=document.createElement("TR");
+            let amt_td=document.createElement("TD");
+            let bal_td=document.createElement("TD");
+            let dt_td=document.createElement("TD");
+
+            amt_td.innerHTML=item.operation+item.amount;
+            bal_td.innerHTML=new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(item.balance);
+            dt_td.innerHTML=item.datetime;
+
+            tr.appendChild(amt_td);
+            tr.appendChild(bal_td);
+            tr.appendChild(dt_td);
+
+            document.getElementById("trans_hist_body").appendChild(tr);
+        });
+        updateData();
+    }
 }
 
 function listUsers(){
@@ -141,7 +273,7 @@ function userExists(name){
             return i;
         }
     }
-    alert("User "+name+" doesn't exist in Bank database");
+    console.log("User "+name+" doesn't exist in Bank database");
     return -1; //No match on Users List
 }
 
@@ -156,4 +288,9 @@ function fetchData(){
     if( localStorage.getItem("Users") !== null ){
         Users=JSON.parse(localStorage.getItem("Users"));
     }
+}
+
+//return current local date time as a string
+function getDatetime(){
+    return new Date().toLocaleString().replace(",","").replace(/:.. /," ");
 }
