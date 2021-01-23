@@ -21,7 +21,7 @@
 </head>
 
 <body onload="fetchData();">
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
                 aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,7 +32,7 @@
                 <a class="navbar-brand" href="index.html">Bank App</a>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="users.html">Users</a>
+                        <a class="nav-link" aria-current="page" href="users.html">Users</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="create.html">Create an account</a>
@@ -41,7 +41,7 @@
                         <a class="nav-link" href="balance.html">Get balance</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="transactions.html">Transactions</a>
+                        <a class="nav-link active" href="transactions.html">Transactions</a>
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
@@ -58,13 +58,13 @@
     <div class="container">
         <div class="row mb-5">
             <div class="col-3"></div>
-            <div class="col-6 content p-4 bg-forms">
+            <div class="col-md-6 col-12 content p-4 bg-forms">
                 <button type="button" class="btn btn-primary create-btn" style="background-color: rgb(255, 253, 251);color:black;outline:none;border:none;" onclick='toggleTransferOptions("deposit");'>Deposit Transaction</button>
             </div>
         </div>
         <div class="row mb-5" id="deposit_container" style="display:none;">
             <div class="col-3"></div>
-            <div class="col-6 content p-4 bg-forms">
+            <div class="col-md-6  col-12 content p-4 bg-forms">
                 <h3 class="text-center">Deposit</h3>
                 <form id="deposit_form">
                     <div class="mb-3">
@@ -81,13 +81,13 @@
         </div>
         <div class="row mb-5">
             <div class="col-3"></div>
-            <div class="col-6 content p-4 bg-forms">
+            <div class="col-md-6 col-12 content p-4 bg-forms">
                 <button type="button" class="btn btn-primary create-btn"  style="background-color: rgb(255, 253, 251);color:black;outline:none;border:none;" onclick='toggleTransferOptions("withdraw");'>Withdraw Transaction</button>
             </div>
         </div>
         <div class="row mb-5" id="withdraw_container" style="display:none;">
             <div class="col-3"></div>
-            <div class="col-6 content p-4 bg-forms">
+            <div class="col-md-6 col-12 content p-4 bg-forms">
                 <h3 class="text-center">Withdraw</h3>
                 <form id="withdraw_form">
                     <div class="mb-3">
@@ -104,18 +104,19 @@
         </div>
         <div class="row mb-5">
             <div class="col-3"></div>
-            <div class="col-6 content p-4 bg-forms">
+            <div class="col-md-6 col-12 content p-4 bg-forms">
                 <button type="button" class="btn btn-primary create-btn"  style="background-color: rgb(255, 253, 251);color:black;outline:none;border:none;" onclick='toggleTransferOptions("transfer");'>Transfer Transaction</button>
             </div>
         </div>
         <div class="row mb-5" id="transfer_container" style="display:none;">
             <div class="col-3"></div>
-            <div class="col-6 content p-4 bg-forms">
+            <div class="col-md-6 col-12 content p-4 bg-forms">
                 <h3 class="text-center">Transfer</h3>
                 <form id="transfer_form">
                     <div class="mb-3">
                         <label for="transfer_sender" class="form-label">Sender Name</label>
                         <input type="text" class="form-control" id="transfer_sender">   
+                        <br>
                         <label for="transfer_receiver" class="form-label">Receiver Name</label>
                         <input type="text" class="form-control" id="transfer_receiver">                       
                     </div>
