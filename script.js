@@ -294,3 +294,17 @@ function fetchData(){
 function getDatetime(){
     return new Date().toLocaleString().replace(",","").replace(/:.. /," ");
 }
+
+function loadUserData(){
+    fetchData();
+    Users=[];
+    Users.push(new User("John Cena",17000000,"john_cena@defaultmail.com"));
+    Users.push(new User("Mary Anderson",250000,"mary_anderson@defaultmail.com"));
+    Users.push(new User("July Valentine",35000,"july_valentine@defaultmail.com"));
+    Users.push(new User("Rommel Torquator",1000,"rommel_torquator@defaultmail.com"));
+    Users.push(new User("JC Ong",1000,"jc_ong@defaultmail.com"));
+    
+    updateData();
+    alert("Old user data removed and replaced by default Users")
+    
+}
