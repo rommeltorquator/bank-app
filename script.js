@@ -10,7 +10,8 @@ if( document.getElementById('createUser_form') != null ){
     document.getElementById('createUser_form').onsubmit=function(){
         let user=document.getElementById("fullName").value;
         let balance=document.getElementById("balance").value;
-        createUser(user,balance);
+        let email=document.getElementById("email").value;
+        createUser(user,balance,email);
         document.getElementById("fullName").value="";
         document.getElementById("balance").value="";
         return false; //important to prevent default behaviour at the end of your submit handler
@@ -95,10 +96,10 @@ function Transaction(operation,amount,balance,datetime){
     this.datetime=datetime;
 }
 
-function createUser(user,balance=0){
+function createUser(user,balance=0,email=""){
     fetchData();
     if( validNameFormat(user) && validAmtFormat(balance) ){
-        Users.push(new User(user,balance));
+        Users.push(new User(user,balance,email));
     }
     updateData();
 
@@ -113,15 +114,18 @@ function deposit(user,amount){
     let index=userExists(user);
 
     if( index>=0 && validAmtFormat(amount) ){
-        let amount_parsed=parseInt(amount)
+        let amount_parsed=parseInt(amount);
+        currentDatetime = getDatetime();
         Users[index].balance+=amount_parsed;
-        Users[index].transaction_history.push( new Transaction("+",amount_parsed,Users[index].balance,getDatetime()));
+        Users[index].transaction_history.push( new Transaction("+",amount_parsed,Users[index].balance,currentDatetime));
         updateData();
 
         let addedAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(amount);
         document.getElementById("transaction_status").innerHTML="Transaction complete! "+addedAmount+" added to "+user+"'s account";
         // document.getElementById("transaction_status").innerHTML="Transaction complete!";
         
+        sendNotif(index,"deposit",addedAmount,currentDatetime);
+
         setTimeout(function(){
             document.getElementById("transaction_status").innerHTML="";
         },5000);    
@@ -138,8 +142,9 @@ function withdraw(user,amount){
     //check if balance is sufficient for withdrawal
     if( index>=0 && validAmtFormat(amount) && Users[index].balance>=amount){
         let amount_parsed=parseInt(amount);
+        currentDatetime = getDatetime();
         Users[index].balance-=amount_parsed;
-        Users[index].transaction_history.push( new Transaction("-",amount_parsed,Users[index].balance,getDatetime()));
+        Users[index].transaction_history.push( new Transaction("-",amount_parsed,Users[index].balance,currentDatetime));
 
         updateData();
 
@@ -147,6 +152,8 @@ function withdraw(user,amount){
         document.getElementById("transaction_status").innerHTML="Transaction complete! "+deductedAmount+" deducted from "+user+"'s account";
         // document.getElementById("transaction_status").innerHTML="Transaction complete!";
         
+        sendNotif(index,"withdrawal",deductedAmount,currentDatetime);
+
         setTimeout(function(){
             document.getElementById("transaction_status").innerHTML="";
         },5000);  
@@ -163,19 +170,25 @@ function send(from_user,to_user,amount){
 
     if( sender_index>=0 && receiver_index>=0 && validAmtFormat(amount) && Users[sender_index].balance>=amount ){
         let amount_parsed=parseInt(amount);
+        currentDatetime = getDatetime();
 
         Users[sender_index].balance-=amount_parsed;
-        Users[sender_index].transaction_history.push( new Transaction("-",amount_parsed,Users[sender_index].balance,getDatetime()));
+        Users[sender_index].transaction_history.push( new Transaction("-",amount_parsed,Users[sender_index].balance,currentDatetime));
 
         Users[receiver_index].balance+=amount_parsed;
-        Users[receiver_index].transaction_history.push( new Transaction("+",amount_parsed,Users[receiver_index].balance,getDatetime()));
+        Users[receiver_index].transaction_history.push( new Transaction("+",amount_parsed,Users[receiver_index].balance,currentDatetime));
 
         updateData();
         
         let transAmount = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(amount);
         document.getElementById("transaction_status").innerHTML="Transaction complete! "+transAmount+" transferred from "+from_user+" to "+to_user+"'s account";
         // document.getElementById("transaction_status").innerHTML="Transaction complete!";
-        
+
+        //send email notif to sender
+        sendNotif(sender_index,"send",transAmount,currentDatetime,receiver_index);
+        //send email notif to receiver
+        sendNotif(receiver_index,"deposit",transAmount,currentDatetime);
+
         setTimeout(function(){
             document.getElementById("transaction_status").innerHTML="";
         },5000);  
@@ -302,9 +315,92 @@ function loadUserData(){
     Users.push(new User("Mary Anderson",250000,"mary_anderson@defaultmail.com"));
     Users.push(new User("July Valentine",35000,"july_valentine@defaultmail.com"));
     Users.push(new User("Rommel Torquator",1000,"rommel_torquator@defaultmail.com"));
-    Users.push(new User("JC Ong",1000,"jc_ong@defaultmail.com"));
+    Users.push(new User("jc",1000,"ninjakilledmessage@gmail.com"));
+    Users.push(new User("jc2",1000,"proxybetazero@gmail.com"));
     
     updateData();
-    alert("Old user data removed and replaced by default Users")
+    alert("Old user data removed and replaced by default Users");
+
     
+}
+
+function toggleTransferOptions(transaction){
+    let deposit_container = document.getElementById("deposit_container");
+    // deposit_container.style.display="none";
+    let withdraw_container=document.getElementById("withdraw_container");
+    // withdraw_container.style.display="none";
+    let transfer_container=document.getElementById("transfer_container");
+    // transfer_container.style.display="none";
+    if(transaction==="deposit"){
+        if(deposit_container.style.display==="flex"){
+            deposit_container.style.display="none";
+        }else{
+            deposit_container.style.display="flex";
+            withdraw_container.style.display="none";
+            transfer_container.style.display="none";
+        }
+    }else if(transaction==="withdraw"){
+        if(withdraw_container.style.display==="flex"){
+            withdraw_container.style.display="none";
+        }else{
+            deposit_container.style.display="none";
+            withdraw_container.style.display="flex";
+            transfer_container.style.display="none";
+        }
+    }else{
+        if(transfer_container.style.display==="flex"){
+            transfer_container.style.display="none";
+        }else{
+            deposit_container.style.display="none";
+            withdraw_container.style.display="none";
+            transfer_container.style.display="flex";
+        }
+    }
+}
+
+function sendNotif(user_index,action,amount,datetime,receiver_index=-1){
+
+    //sample not valid email
+    // let email_to="jackburner233@gmail.com";
+    let email_from="donotreplybankapp@gmail.com";
+    let email_to;
+    let email_subj;
+    let email_body;
+    let email_body_name;
+
+    if(Users[user_index].email===""){
+        console.log("No email address linked to user "+Users[user_index].name);
+        return;
+    }
+
+    if(action==="deposit"){ //action is deposit
+        email_to=Users[user_index].email;
+        email_subj="Bank App: A deposit trasaction made to your account";
+        email_body_name=Users[user_index].name;
+        email_body="Hi "+email_body_name+",\n"+"Your account received "+amount+" on "+datetime;
+        email_body="<html>"+"<h3>Hi "+email_body_name+",</h3>"+"<p>Your account received "+amount+" on "+datetime+"</p></html>";
+    }else if(action==="withdrawal"){ //action is withdrawal
+        email_to=Users[user_index].email;
+        email_subj="Bank App: A withdrawal trasaction made by your account";
+        email_body_name=Users[user_index].name;
+        email_body="<html>"+"<h3>Hi "+email_body_name+",</h3>"+"<p>Your account was deducted "+amount+" on "+datetime+"</p></html>";
+    }else{ //action is send
+        email_to=Users[user_index].email;
+        email_subj="Bank App: A transfer trasaction made by your account";
+        email_body_name=Users[user_index].name;
+        email_body="<html>"+"<h3>Hi "+email_body_name+",</h3>"+"Your account has sent "+amount+" to "+Users[receiver_index].name+" on "+datetime+"</p></html>";
+    }
+
+    Email.send({
+        Host : "smtp.gmail.com",
+        Username : "randomsender18@gmail.com",
+        Password : "TCVMiiRio1nQj",
+        To : email_to,
+        From : email_from,
+        Subject : email_subj,
+        Body : email_body
+    }).then(
+    //   message => alert(message)
+        console.log("email notif sent")
+    );
 }
