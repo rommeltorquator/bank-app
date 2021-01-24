@@ -14,7 +14,8 @@
         href="https://fonts.googleapis.com/css2?family=Fahkwang:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Paytone+One&family=Taviraj&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link id="stylesheet" rel="stylesheet" href="style.css">
     <script src="https://smtpjs.com/v3/smtp.js"></script>
     <script src="script.js" async></script>
     <title>Hello, world!</title>
@@ -29,7 +30,7 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-                <a class="navbar-brand" href="index.html">Bank App</a>
+                <a class="navbar-brand" href="index.html">Confiance Bank</a>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link" aria-current="page" href="users.html">Users</a>
@@ -44,7 +45,11 @@
                         <a class="nav-link" href="transactions.html">Transactions</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0">
+                <!-- dark mode button -->
+                <form class="form-inline mx-4 my-2 my-lg-0">               
+                    <button id="darkMode" class="btn btn-primary my-2 my-sm-0 btn-sm" type="button">Dark Mode</button>
+                </form>                
+                <form class="form-inline my-2 my-lg-0">                    
                     <button class="btn btn-success my-2 my-sm-0 load-btn" type="button" onclick="loadUserData();">Load User Data</button>
                 </form>
             </div>

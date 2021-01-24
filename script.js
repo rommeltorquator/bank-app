@@ -1,6 +1,33 @@
 let Users=[];
 let Users_json;
 
+var setTheme = localStorage.getItem('theme');
+
+if(setTheme == null) {
+    document.getElementById('stylesheet').href = 'style.css';
+    document.getElementById('darkMode').innerText = 'Dark Mode';
+} else {
+    document.getElementById('stylesheet').href = setTheme;
+
+    if(setTheme == 'style.css') {
+        document.getElementById('darkMode').innerText = 'Dark Mode';
+    } else {
+        document.getElementById('darkMode').innerText = 'Light Mode';
+    }
+}
+
+document.getElementById('darkMode').addEventListener('click', function() {
+    if(document.getElementById('darkMode').innerText == 'Light Mode') {
+        document.getElementById('darkMode').innerText = 'Dark Mode';
+        document.getElementById('stylesheet').href = 'style.css';
+        localStorage.setItem('theme', 'style.css');
+    } else {
+        document.getElementById('darkMode').innerText = 'Light Mode';
+        document.getElementById('stylesheet').href = 'dark.css';
+        localStorage.setItem('theme', 'dark.css');
+    }
+})
+
 /* ******************************************************************
 
                     Dom handlers
@@ -105,7 +132,7 @@ function createUser(user,balance=0,email=""){
 
     document.getElementById("createUser_status").innerHTML="User has been created!";
     setTimeout(function(){
-        document.getElementById("createUser_status").innerHTML="";
+        document.getElementById("createUser_status").innerHTML="";        
     },2000);
 }
 

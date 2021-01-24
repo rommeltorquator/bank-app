@@ -4,7 +4,7 @@
 
 body {
     letter-spacing: 1px;    
-    background-color: #fff9f0;
+    background-color: #333333;
 }
 
 h1,
@@ -14,7 +14,12 @@ h4,
 h5,
 h6 {
     font-family: 'Fahkwang', sans-serif;
-    color: #023F5C;
+    /* color: #023F5C; */
+    color: #fff9f0;
+}
+
+p {
+    color: #999999;
 }
 
 form {
@@ -30,13 +35,14 @@ h3 {
     color: #222;
 }
 
-.text-success {    
+.text-success {
+    color: #fff9f0 !important;
     font-size: 19px;
 }
 
 #darkMode {
-    background-color: #333333;
-    color: #fff9f0;
+    background-color: #fff9f0;
+    color: #333333;
     border: none;
     font-size: 12px;
 }
@@ -57,7 +63,8 @@ h3 {
 }
 
 .navbar-light {
-    background-color: #066594;    
+    /* background-color: #066594;     */
+    background-color: #111111;    
 }
 
 .navbar-light .navbar-toggler {
