@@ -419,9 +419,6 @@ function sendNotif(user_index,action,amount,datetime,receiver_index=-1){
     }
 
     Email.send({
-        // Host : "smtp.gmail.com",
-        // Username : "randomsender18@gmail.com",
-        // Password : "TCVMiiRio1nQj",
         SecureToken : "90cc2e4d-b622-4062-85ae-8beda180380c",
         To : email_to,
         From : email_from,
